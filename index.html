@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Read Quran</title>
+    <link href='https://fonts.googleapis.com/css?family=Alata' rel='stylesheet'>
+    <style>
+        body {
+            background-color: #0c1436;
+            font-family: 'Segoe UI', Tahoma, 'Geneva', Verdana, sans-serif, 'Alata', 'Poppins';
+            color: rgb(255, 255, 255);
+            margin-top: -10px;
+        }
+
+        #form-container,
+        #chapterInfo {
+            margin: auto;
+            width: fit-content;
+        }
+
+        h1 {
+            display: block;
+            
+            top: 0%;
+            font-family: 
+            text-align: center;
+            font-family: 'Alata';
+            font-weight: bold;
+            justify-content: center;
+            text-align: center;
+        
+            font-size: 25px;
+            letter-spacing: 5px;
+            color: #ffffff;
+        }
+
+        .form-group {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        #form-container {
+            display: flex;
+            max-width: fit-content;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        #verse-search-form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: auto;
+            color: white;
+            background-color: rgb(10, 17, 116);
+            padding: 20px;
+            box-shadow: black 5px;
+            border-radius: 15px;
+        }
+
+        #verse-search-form label {
+            font-weight: bold;
+            display: block;
+            margin-right: 0px;
+            font-size: 14px;
+            padding-right: 10px;
+            padding-left: 10px;
+            color: rgb(255, 255, 255);
+        }
+
+        #verse-search-form input[type="number"] {
+            width: 70px;
+            padding: 10px;
+            margin-left: 10px;
+            margin-right: 10px;
+            border-radius: 15px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            font-size: 14px;
+            
+
+        }
+
+        select {
+            padding: 10px;
+            font-size: 14px;
+            font-family: 'Alata';
+            border-radius: 15px;
+            width: 110px;
+            background-color: #fff;
+            
+            text-align-last: left;
+        }
+
+        option {
+            font-size: 14px;
+            text-align: left;
+        }
+
+        .container {
+            display: flex;
+            color: white;
+            
+            background-color: rgb(10, 17, 116);
+            border-radius: 15px;
+            width: fit-content;
+            max-width: 80%;
+            height: fit-content;
+            text-align: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            box-shadow: black 5px;
+        }
+
+        #result {
+
+            margin: auto;
+            
+            padding: 10px;
+            width: fit-content;
+            height: 60vh;
+            max-width: 90%;
+            margin-top: 10px;
+            border-radius: 15px;
+            background-color: rgb(0, 6, 86);
+            color: rgb(255, 255, 255);
+            font-size: 18px;
+            line-height: 1;
+            text-align: left;
+            overflow-y: scroll;
+        }
+
+        #result ol {
+            margin: 0;
+            padding: 10px;
+            list-style: decimal;
+			padding-left:100px;
+            color: black;
+            font-family: 'poppins';
+           
+        }
+
+        #result li {
+            padding: 10px;
+			
+            color: rgb(255, 255, 255);
+            font-family: 'Alata';
+        }
+
+        #result li:before {
+            display: none;
+            padding: 40px;
+        }
+
+        #chapterInfo b {
+            color: red;
+        }
+
+        #chapterInfo p {
+            display: inline-block;
+
+        }
+
+        #reference {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>READ QURAN IN MULTI-LANGUAGE</h1>
+    <div id="form-container">
+        <form id="verse-search-form">
+            <div class="form-group">
+                <label for="chapter-number">Chapter:</label>
+                <select id="chapter-number" name="chapter-number" required>
+                    <!-- Chapter options go here -->
+                </select>
+            </div>
+            <div class="form-group"><label for="verse-number">Verse:</label>
+                <input type="number" id="verse-number" name="verse-number" min="1">
+            </div>
+
+            <div class="form-group"><label for="language">Edition:</label>
+                <select id="language">
+                    <option selected value="en.sahih"> Sahih International</option>
+                    <!-- Language options will be populated by JavaScript -->
+                </select>
+            </div>
+
+        </form>
+    </div>
+    <div id="chapterInfo" class="container"></div>
+    <div id="result"></div>
+    <script>
+        const chapterDropdown = document.getElementById('chapter-number');
+        const verseNumberInput = document.getElementById('verse-number');
+        const languageDropdown = document.getElementById('language');
+        const translationDropdown = document.getElementById('translation');
+        const resultDiv = document.getElementById('result');
+        var defaultIdentifier = 'en.sahih';
+        var json = {
+            "ar": "Arabic",
+            "sq": "Albanian",
+            "az": "Azerbaijani",
+            "bn": "Bengali",
+            "bg": "Bulgarian",
+            "ba": "Bosnian",
+            "bs": "Bosnian",
+            "my": "Burmese",
+            "zh": "Chinese",
+            "cs": "Czech",
+            "dv": "Divehi; Dhivehi; Maldivian;",
+            "en": "English",
+            "fr": "French",
+            "de": "German",
+            "ha": "Hausa",
+            "hi": "Hindi",
+            "id": "Indonesian",
+            "it": "Italian",
+            "ja": "Japanese",
+            "ko": "Korean",
+            "ku": "Kurdish",
+            "ms": "Malay",
+            "ml": "Malayalam",
+            "nl": "Dutch",
+            "no": "Norwegian",
+            "pl": "Polish",
+            "pt": "Portuguese",
+            "fa": "Persian",
+            "ro": "Romanian",
+            "ru": "Russian",
+            "sd": "Sindhi",
+            "si": "Sinhalese",
+            "so": "Somali",
+            "es": "Spanish",
+            "sv": "Swedish",
+            "sw": "Swahili",
+            "ta": "Tamil",
+            "tg": "Tajik",
+            "th": "Thai",
+            "tr": "Turkish",
+            "tt": "Tatar",
+            "ug": "Uyghur",
+            "ur": "Urdu",
+            "uz": "Uzbek",
+
+        };
+
+
+        // Populate chapter dropdown
+        fetch('https://api.alquran.cloud/v1/surah')
+            .then(response => response.json())
+            .then(data => {
+
+                for (i = 1; i <= 114; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.text = `${i}. ${data.data[i - 1].englishName}`;
+                    chapterDropdown.add(option);
+                }
+            })
+
+        function fetchLanguages() {
+            const url = 'https://api.alquran.cloud/v1/edition/type/translation';
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const translations = data.data;
+                    let languageOptions = '';
+
+                    translations.forEach(translation => {
+                        const languageCode = translation.language;
+                        const languageName = json[languageCode];
+                        const identifier = translation.identifier;
+                        languageOptions += `<option value="${identifier}">${languageName} (${translation.englishName})</option>`;
+                    });
+                    languageDropdown.innerHTML = `
+            <label for="language">Select language:</label>
+            <select id="language-select">
+              <option selected value="en.sahih">English (Sahih International)</option>
+              ${languageOptions}
+            </select>
+          `;
+                })
+                .catch(error => {
+                    languageDiv.innerHTML = 'Number exceeded the total number of verses, Clear the verses and enter the number within the totalnumber of verses from the chapter ';
+                    console.log(error.message);
+                });
+        }
+
+        fetchLanguages();
+
+        function fetchVerses(chapterNumber, verseNumber, URL) {
+            var verseURL = `https://api.alquran.cloud/v1/ayah/${chapterNumber}:${verseNumber}/${languageDropdown.value}`;
+            var notVerseURL = `https://api.alquran.cloud/v1/surah/${chapterNumber}/${languageDropdown.value}`;
+            var URL = `https://api.alquran.cloud/v1/ayah/${chapterNumber}:${verseNumber}/${languageDropdown.value}`
+            var url;
+            if (verseNumber) {
+                url = URL;
+            } else {
+                url = notVerseURL;
+            }
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    let verses = '';
+
+
+                    if (verseNumber) {
+                        var totalVerses = data.data.surah.numberOfAyahs;
+                        if (verseNumber > totalVerses) {
+                            var newChapnum = chapterNumber + 1;
+                            URL = `https://api.alquran.cloud/v1/ayah/${newChapnum}:${verseNumber}/${languageDropdown.value}`
+                            fetchVerses(newChapnum)
+                        }
+                        else { }
+                        verses = data.data.text;
+
+                        resultDiv.innerHTML = `
+            <p>${verses}</p>
+            <div id = 'reference'><h5>Quran ${chapterNumber}:${verseNumber}</h5></div>
+            `;
+                    } else {
+                        data.data.ayahs.forEach(ayah => {
+                            verses += `<li>${ayah.text}</li>`;
+                        });
+                        resultDiv.innerHTML = `<ol>${verses}</ol>`;
+                        document.getElementById("chapterInfo").innerHTML = `
+          <div id='cInfo'><p>
+          <b>Chapter Number :</b> ${data.data.number} ( ${data.data.name} )   
+          <b>Chapter Name:</b> ${data.data.englishName}( ${data.data.englishNameTranslation} )   
+          <b>Verse count :</b> ${data.data.numberOfAyahs}   
+          <b>Revelation type :</b> ${data.data.revelationType}   </p>
+          </div>
+        `
+                    }
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = 'Errors in fetchverses: ' + error.message;
+                });
+        }
+        function updateResult() {
+            const chapterNumber = chapterDropdown.value;
+            const verseNumber = verseNumberInput.value;
+            fetchVerses(chapterNumber, verseNumber, URL);
+        }
+        chapterDropdown.addEventListener('change', updateResult);
+        verseNumberInput.addEventListener('change', updateResult);
+        languageDropdown.addEventListener('change', updateResult)
+        // By default, display the numbered list of the verses from the first chapter of the Quran
+        fetchVerses(1);
+    </script>
+</body>
+
+</html>
